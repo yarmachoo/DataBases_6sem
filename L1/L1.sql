@@ -70,6 +70,12 @@ CREATE OR REPLACE PROCEDURE InsertTask5(myId NUMBER, myValue NUMBER) IS
 BEGIN
     INSERT INTO MYTABLE (id, val) VALUES (myId, myValue);
     COMMIT;
+    DBMS_OUTPUT.PUT_LINE('The note is edded: ID = ' || myId || ', VALUE = ' || myValue);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+        DBMS_OUTPUT.PUT_LINE('Error: note with ID = ' || myId || ' is still exist.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END InsertTask5;
 /
 
@@ -85,11 +91,17 @@ CREATE OR REPLACE PROCEDURE UPDATETASK5(myId NUMBER, newValue Number) IS
 BEGIN
     UPDATE MYTABLE SET val=newValue Where id=myId;
     COMMIT;
+    DBMS_OUTPUT.PUT_LINE('The note is updated: ID = ' || myId || ', VALUE = ' || newValue);
+Exception
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Error: The note with ID = '|| myId||' is not exist');
+     WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END UPDATETASK5;
 /
 
 BEGIN
-    UPDATETASK5(1, 101);
+    UPDATETASK5(1, 102);
 END;
 
 Select * FROM MYTABLE Where id=1;
@@ -98,10 +110,16 @@ CREATE OR REPLACE PROCEDURE DELETETASK5(myId NUMBER) IS
 BEGIN
     DELETE FROM MYTABLE WHERE id=myId;
     COMMIT;
+    DBMS_OUTPUT.PUT_LINE('The note is deleted: ID = ' || myId);
+Exception
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Error: The note with ID = '|| myId||' is not exist');
+     WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END DELETETASK5;
 
 BEGIN
-    DELETETASK5(10002);
+    DELETETASK5(-5);
 END;
 
 BEGIN
