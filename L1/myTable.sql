@@ -15,3 +15,28 @@ BEGIN
     END LOOP;
     COMMIT;
 END;
+
+
+--Напишите собственную функцию, которая выводит TRUE 
+--если четных значений val в таблице MyTable больше, 
+--FALSE если больше нечетных значений и EQUAL если 
+--количество четных и нечетных равно
+
+CREATE OR REPLACE FUNCTION Task3 
+RETURN VARCHAR AS
+    counterOfEvenNumbers NUMBER:=0;
+    counterOfOddNumbers NUMBER:=0;
+BEGIN
+    SELECT COUNT(*) INTO counterOfEvenNumbers FROM MYTABLE WHERE MOD(val, 2)=0;
+    SELECT COUNT(*) INTO counterOfOddNumbers FROM MYTABLE WHERE MOD(val, 2)=1;
+
+    IF counterOfEvenNumbers>counterOfOddNumbers THEN
+        RETURN 'TRUE';
+    ELSIF counterOfEvenNumbers<counterOfOddNumbers THEN
+        RETURN 'FALSE';
+    ELSE RETURN 'EQUAL';
+    END IF;
+END Task3;
+/
+
+SELECT TASK3 FROM DUAL;
