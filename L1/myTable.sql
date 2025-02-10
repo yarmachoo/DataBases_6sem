@@ -103,3 +103,29 @@ END DELETETASK5;
 BEGIN
     DELETETASK5(10002);
 END;
+
+
+
+--Task 6
+
+CREATE OR REPLACE FUNCTION TASK6(salary NUMBER, percent NUMBER)
+RETURN NUMBER AS
+    percentInDouble NUMBER;
+    totalSalary Number;
+BEGIN
+    IF salary<=0 THEN
+        DBMS_OUTPUT.PUT_LINE('Error: mounth salary cannot be lower than or equal to 0');
+        RETURN NULL;
+    ELSIF percent<0 THEN
+        DBMS_OUTPUT.PUT_LINE('Error: percent cannot be lower than 0');
+        RETURN NULL;
+    END IF;
+
+    percentInDouble:=percent/100;
+    totalSalary:=(1+percentInDouble)*12*salary;
+    return totalSalary;
+
+END TASK6;
+/
+
+SELECT TASK6(2100, 10) FROM DUAL;
