@@ -1,9 +1,11 @@
+
 CREATE TABLE MYTABLE (
     ID NUMBER PRIMARY KEY,
     VAL NUMBER
 );
 
-SELECT * FROM MYTABLE;
+select * FROM MYTABLE;
+
 
 -- Реализовать анонимный блок для вставки 10 000 случайных значений
 DECLARE
@@ -42,9 +44,6 @@ END Task3;
 SELECT TASK3 FROM DUAL;
 
 
-
-
-
 CREATE OR REPLACE FUNCTION Task4 (myId NUMBER)
     RETURN VARCHAR AS
     myValue NUMBER;
@@ -55,14 +54,15 @@ BEGIN
     RETURN str;
 EXCEPTION 
 WHEN NO_DATA_FOUND THEN
-    RETURN 'ERROR: There is no note with' || myId || ' ID'; 
+    RETURN 'ERROR: There is no note with ' || myId || ' ID'; 
 END TASK4;
 /
 
 
 SELECT TASK4(10) FROM DUAL;
-
+SELECT TASK4(10001) FROM DUAL;
 SHOW ERRORS FUNCTION TASK4;
+
 
 --5. Написать процедуры, реализующие DML операции 
 --(INSERT, UPDATE, DELETE) для указанной таблицы
@@ -102,4 +102,8 @@ END DELETETASK5;
 
 BEGIN
     DELETETASK5(10002);
+END;
+
+BEGIN
+    UPDATETASK5(10002, 101);
 END;
