@@ -40,3 +40,26 @@ END Task3;
 /
 
 SELECT TASK3 FROM DUAL;
+
+
+
+
+
+CREATE OR REPLACE FUNCTION Task4 (myId NUMBER)
+    RETURN VARCHAR AS
+    myValue NUMBER;
+    str VARCHAR(4000);
+BEGIN
+    SELECT val INTO myValue FROM MYTABLE Where id=myId;
+    str:='INSERT INTO MYTABLE (id, val) VALUES(' || myId || ',' || myValue || ');';
+    RETURN str;
+EXCEPTION 
+WHEN NO_DATA_FOUND THEN
+    RETURN 'ERROR: There is no note with' || myId || ' ID'; 
+END TASK4;
+/
+
+
+SELECT TASK4(10) FROM DUAL;
+
+SHOW ERRORS FUNCTION TASK4;
