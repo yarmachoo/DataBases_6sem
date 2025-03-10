@@ -225,7 +225,7 @@ SELECT * FROM STUDENTS_LOGS;
  ) IS
     v_restore_time TIMESTAMP;
     v_group_exists NUMBER;
-    v_student_exists NUMBER
+    v_student_exists NUMBER;
 begin
     if p_time is not null THEN
         v_restore_time:=p_time;
@@ -249,7 +249,7 @@ begin
         IF v_group_exists = 0 THEN
             INSERT INTO GROUPS (ID, "NAME")
             VALUES (record.GROUP_ID, 'Group ' || record.GROUP_ID);
-            DBMS_OUTPUT.PUT_LINE('Восстановлена группа с ID ' || record.GROUP_ID);
+            DBMS_OUTPUT.PUT_LINE('The group with ID ' || record.GROUP_ID || ' is restored');
         END IF;
     END LOOP;
 
@@ -266,18 +266,35 @@ begin
         IF v_student_exists = 0 THEN
             INSERT INTO STUDENTS (ID, "NAME", GROUP_ID)
             VALUES (record.STUDENT_ID, record.STUDENT_NAME, record.GROUP_ID);
-            DBMS_OUTPUT.PUT_LINE('Восстановлен студент с ID ' || record.STUDENT_ID);
+            DBMS_OUTPUT.PUT_LINE('Student with ID ' || record.STUDENT_ID || ' is restored');
         ELSE
-            DBMS_OUTPUT.PUT_LINE('Студент с ID ' || record.STUDENT_ID || ' уже существует, пропускаем.');
+            DBMS_OUTPUT.PUT_LINE('Student with ID ' || record.STUDENT_ID || ' already exists, skip.');
         END IF;
     END LOOP;
 
     COMMIT;
-    DBMS_OUTPUT.PUT_LINE('Восстановление завершено.');
+    DBMS_OUTPUT.PUT_LINE('Restore was end.');
 
 EXCEPTION
     WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Ошибка: ' || SQLERRM);
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
         ROLLBACK;
+END;
+/
+INSERT INTO STUDENTS ("NAME", "GROUP_ID") VALUES ('Veronika', 5);
+select * from STUDENTS
+select * from GROUPS
+select * from STUDENTS_
+
+delete from groups where ID = 5;
+delete from students where ID = 4;
+
+BEGIN
+    restore_students_from_logs(TIMESTAMP '2025-03-10 17:00:00', NULL);
+END;
+/
+
+BEGIN
+    restore_students_from_logs(NULL, INTERVAL '10' MINUTE);
 END;
 /
