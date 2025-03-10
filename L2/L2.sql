@@ -95,7 +95,7 @@ END;
 INSERT INTO STUDENTS ("NAME", "GROUP_ID") VALUES ('John Doe', 1);
 
 select * from STUDENTS;
-INSERT INTO STUDENTS ("NAME", "GROUP_ID") VALUES ('Doe', 1);
+INSERT INTO STUDENTS ("NAME", "GROUP_ID") VALUES ('Doe', 5);
 INSERT INTO STUDENTS (ID, "NAME", "GROUP_ID") VALUES (1, 'Doe', 1);
 
 INSERT INTO GROUPS ("NAME", C_VAL) VALUES ('Group A', 5);
@@ -105,3 +105,65 @@ select * from GROUPS;
 INSERT INTO GROUPS (ID, "NAME", C_VAL) VALUES (5, 'Group C', 5);
 
 INSERT INTO GROUPS ("NAME", C_VAL) VALUES ('Group B', 5);
+
+
+//////////////////////////////////////////////////////////////////
+
+//cascade delete:
+
+CREATE OR REPLACE PACKAGE global_variables AS
+    is_group_delete_cascade BOOLEAN := FALSE;
+END global_variables;
+/
+
+create or replace trigger trigger_delete_group_cascade
+before delete on GROUPS
+for each ROW
+BEGIN
+    global_variables.is_group_delete_cascade:=true;
+
+    delete from STUDENTS
+    WHERE "GROUP_ID" = :OLD.ID;
+
+    global_variables.is_group_delete_cascade := FALSE;
+EXCEPTION
+    WHEN OTHERS THEN
+        global_variables.is_group_delete_cascade := FALSE;
+        RAISE;
+END;
+
+create or replace trigger trigger_chack_group_exists
+before insert or update on STUDENTS
+for each ROW
+DECLARE
+v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count
+    from GROUPS
+    WHERE ID = :New."GROUP_ID";
+
+    IF v_count = 0 THEN
+        Raise_Application_Error(-20000, 'ERROR: Group with ID' || :NEW."GROUP_ID" || ' is not exists.');
+    END IF;
+
+END;
+
+create or replace trigger trigger_prevent_group_id_update
+before update of "GROUP_ID" on STUDENTS
+FOR EACH ROW
+DECLARE 
+    students_exists NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO students_exists
+    FROM STUDENTS
+    WHERE "GROUP_ID" = :OLD."GROUP_ID";
+
+    IF students_exists = 0 THEN
+        Raise_Application_Error(-20000, 'ERROR: this group has students. You can not update ID.');
+    END IF;
+END;
+
+select * from GROUPS
+select * from STUDENTS
+
+DELETE FROM GROUPS WHERE "NAME"='Group A'
