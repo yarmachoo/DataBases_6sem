@@ -7,11 +7,12 @@ CREATE TABLE MYTABLE (
 select * FROM MYTABLE;
 
 
+DROP TABLE MYTABLE;
 -- Реализовать анонимный блок для вставки 10 000 случайных значений
 DECLARE
     counter NUMBER := 1;
 BEGIN
-    FOR i IN 1..10000 LOOP
+    FOR i IN 1..10 LOOP
         INSERT INTO MYTABLE (ID, VAL)
         VALUES (i, TRUNC(DBMS_RANDOM.VALUE(1,100)));
     END LOOP;
@@ -47,7 +48,7 @@ SELECT TASK3 FROM DUAL;
 CREATE OR REPLACE FUNCTION Task4 (myId NUMBER)
     RETURN VARCHAR AS
     myValue NUMBER;
-    str VARCHAR(4000);
+    str VARCHAR(400);
 BEGIN
     SELECT val INTO myValue FROM MYTABLE Where id=myId;
     str:='INSERT INTO MYTABLE (id, val) VALUES(' || myId || ',' || myValue || ');';
@@ -59,7 +60,7 @@ END TASK4;
 /
 
 
-SELECT TASK4(10) FROM DUAL;
+SELECT TASK4(-5) FROM DUAL;
 SELECT TASK4(10001) FROM DUAL;
 SHOW ERRORS FUNCTION TASK4;
 
