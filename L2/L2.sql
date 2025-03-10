@@ -215,3 +215,69 @@ INSERT INTO STUDENTS ("NAME", "GROUP_ID") VALUES ('John Doe', 5);
 UPDATE STUDENTS SET "NAME" = 'John Smith' WHERE "NAME" = 'John Doe';
 DELETE FROM STUDENTS WHERE "NAME" = 'John Smith';
 SELECT * FROM STUDENTS_LOGS;
+
+/////////////////////////////////////////////////////////
+//Task 5
+ 
+ create or replace procedure restore_students_from_logs(
+    p_time TIMESTAMP DEFAULT NULL,
+    p_offset INTERVAL DAY TO SECOND DEFAULT NULL
+ ) IS
+    v_restore_time TIMESTAMP;
+    v_group_exists NUMBER;
+    v_student_exists NUMBER
+begin
+    if p_time is not null THEN
+        v_restore_time:=p_time;
+    ELSIF p_offset is not null THEN
+        v_restore_time:=SYSTIMESTAMP - p_offset;
+    ELSE 
+        Raise_Application_Error(-20000, 'You need to send p_time or p_offset');
+    END IF;
+
+    DBMS_OUTPUT.PUT_LINE('Restore data from ' || TO_CHAR(v_restore_time, 'DD-MM-YYYY HH24:MI:SS'));
+    FOR record IN (
+        SELECT DISTINCT STUDENT_ID, STUDENT_NAME, GROUP_ID
+        FROM STUDENTS_LOGS
+        WHERE ACTION_TIMESTAMP >= v_restore_time
+          AND ACTION_TYPE = 'DELETE'
+    ) LOOP
+        SELECT COUNT(*) INTO v_group_exists
+        FROM GROUPS
+        WHERE ID = record.GROUP_ID;
+
+        IF v_group_exists = 0 THEN
+            INSERT INTO GROUPS (ID, "NAME")
+            VALUES (record.GROUP_ID, 'Group ' || record.GROUP_ID);
+            DBMS_OUTPUT.PUT_LINE('Восстановлена группа с ID ' || record.GROUP_ID);
+        END IF;
+    END LOOP;
+
+    FOR record IN (
+        SELECT * FROM STUDENTS_LOGS
+        WHERE ACTION_TIMESTAMP >= v_restore_time
+          AND ACTION_TYPE = 'DELETE'
+        ORDER BY ACTION_TIMESTAMP DESC
+    ) LOOP
+        SELECT COUNT(*) INTO v_student_exists
+        FROM STUDENTS
+        WHERE ID = record.STUDENT_ID;
+
+        IF v_student_exists = 0 THEN
+            INSERT INTO STUDENTS (ID, "NAME", GROUP_ID)
+            VALUES (record.STUDENT_ID, record.STUDENT_NAME, record.GROUP_ID);
+            DBMS_OUTPUT.PUT_LINE('Восстановлен студент с ID ' || record.STUDENT_ID);
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Студент с ID ' || record.STUDENT_ID || ' уже существует, пропускаем.');
+        END IF;
+    END LOOP;
+
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Восстановление завершено.');
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Ошибка: ' || SQLERRM);
+        ROLLBACK;
+END;
+/
