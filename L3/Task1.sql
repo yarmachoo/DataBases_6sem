@@ -1,4 +1,4 @@
-
+--для хранения зависимостей
 CREATE OR REPLACE TYPE dep_rec AS OBJECT (
     table_name VARCHAR2(128),
     depends_on VARCHAR2(128)
@@ -24,7 +24,7 @@ CREATE OR REPLACE PROCEDURE compare_schemas (
     TYPE table_tab IS TABLE OF table_rec;
     v_sorted_tables table_tab := table_tab();
 
---все таблицы которые нужно создать или обновить в проде
+-- FOR-курсор все таблицы которые нужно создать или обновить в проде
     CURSOR object_diff_to_prod IS
         SELECT t.table_name as object_name
         FROM all_tables t
@@ -52,7 +52,7 @@ CREATE OR REPLACE PROCEDURE compare_schemas (
             GROUP BY table_name
         ) tc1;
 
--- все таблицы, которые есть в проде и нет в леве
+-- все таблицы, которые есть в проде и нет в деве
     CURSOR object_diff_to_drop IS
         SELECT t.table_name as object_name
         FROM all_tables t
@@ -73,6 +73,7 @@ CREATE OR REPLACE PROCEDURE compare_schemas (
         PROCEDURE visit(p_table_name IN VARCHAR2) IS
             v_has_cycle BOOLEAN := FALSE;
         BEGIN
+            -- Проверяем налицие цикла
             IF v_temp_mark.EXISTS(p_table_name) THEN
                 v_cycle_detected := TRUE;
                 v_has_cycle := TRUE;
@@ -109,9 +110,8 @@ CREATE OR REPLACE PROCEDURE compare_schemas (
         v_sorted_tables := v_tables;
         IF v_cycle_detected THEN
             
-        DBMS_OUTPUT.PUT_LINE('======================================================');
-        DBMS_OUTPUT.PUT_LINE('======================================================');
-        DBMS_OUTPUT.PUT_LINE('Сообщение о находке циклических зависимостей');
+        DBMS_OUTPUT.PUT_LINE('------------------------------------------');
+        DBMS_OUTPUT.PUT_LINE('Cycle dependencies were found!!');
         END IF;
     END topological_sort;
     
@@ -126,7 +126,7 @@ CREATE OR REPLACE PROCEDURE compare_schemas (
         v_temp sort_rec;
         n PLS_INTEGER := v_sorted_tables.COUNT;
         
-        -- проверка завис ли табл а от б
+        -- проверка зависит ли таблица а от б
         FUNCTION has_dependency(a VARCHAR2, b VARCHAR2) RETURN BOOLEAN IS
         BEGIN
             FOR i IN 1..v_dependencies.COUNT LOOP
@@ -150,6 +150,7 @@ CREATE OR REPLACE PROCEDURE compare_schemas (
             END LOOP;
         END LOOP;
         
+        -- сортируем таблицы
         FOR i IN 1..n-1 LOOP
             FOR j IN i+1..n LOOP
                 IF v_sort(i).has_cycle = v_sort(j).has_cycle THEN -- чекнем одиаковый ли статус с циклами
@@ -179,7 +180,7 @@ CREATE OR REPLACE PROCEDURE compare_schemas (
                 END IF;
             END LOOP;
         END LOOP;
-        
+        -- Перезапись отсортированных данных обратно в v_sorted_tables
         v_sorted_tables.DELETE;
         FOR i IN 1..n LOOP
             v_sorted_tables.EXTEND;
@@ -215,9 +216,9 @@ BEGIN
           AND ac.constraint_type = 'R'
     ); -- информация, на что ссылается внешн ключ в текущ табл
     
-    DBMS_OUTPUT.PUT_LINE('Проверка object_diff_to_prod:');
+    DBMS_OUTPUT.PUT_LINE('Check object which is not in the prod:');
     FOR rec IN object_diff_to_prod LOOP
-        DBMS_OUTPUT.PUT_LINE('Объект: TABLE ' || rec.object_name);
+        DBMS_OUTPUT.PUT_LINE('Object: TABLE ' || rec.object_name);
     END LOOP;
     
     topological_sort;
@@ -225,9 +226,9 @@ BEGIN
     
     -- генерим DDL для таблиц
     FOR i IN 1..v_sorted_tables.COUNT LOOP
-        DBMS_OUTPUT.PUT_LINE('[DEBUG] Обработка: TABLE ' || v_sorted_tables(i).object_name);
+        DBMS_OUTPUT.PUT_LINE('[DEBUG] Work with: TABLE ' || v_sorted_tables(i).object_name);
         IF v_sorted_tables(i).has_cycle THEN
-            DBMS_OUTPUT.PUT_LINE('-- Replace table: ' || v_sorted_tables(i).object_name || ' (циклическая зависимость)');
+            DBMS_OUTPUT.PUT_LINE('-- Replace table: ' || v_sorted_tables(i).object_name || ' (cycle dependency)');
         ELSE
             DBMS_OUTPUT.PUT_LINE('-- Replace table: ' || v_sorted_tables(i).object_name);
         END IF;
@@ -321,11 +322,10 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('DROP TABLE "' || UPPER(prod_schema_name) || '"."' || rec.object_name || '";');
     END LOOP;
     
-    DBMS_OUTPUT.PUT_LINE('======================================================');
-    DBMS_OUTPUT.PUT_LINE('======================================================');
+    DBMS_OUTPUT.PUT_LINE('------------------------------------------');
 EXCEPTION
     WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Ошибка: ' || SQLERRM);
+        DBMS_OUTPUT.PUT_LINE('ERROR: ' || SQLERRM);
         RAISE;
 END compare_schemas;
 /

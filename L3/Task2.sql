@@ -106,12 +106,10 @@ CREATE OR REPLACE PROCEDURE GENERATE_SYNC_SCRIPT(
     END;
 
 BEGIN
-    DBMS_OUTPUT.PUT_LINE('======================================================');
-    DBMS_OUTPUT.PUT_LINE('======================================================');
+    DBMS_OUTPUT.PUT_LINE('------------------------------------------');
     PROCESS_OBJECTS('PROCEDURE');
     PROCESS_OBJECTS('FUNCTION');
-   DBMS_OUTPUT.PUT_LINE('======================================================');
-   DBMS_OUTPUT.PUT_LINE('======================================================');
+    DBMS_OUTPUT.PUT_LINE('------------------------------------------');
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error generating script: ' || SQLERRM);
