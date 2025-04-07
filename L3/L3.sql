@@ -144,3 +144,4 @@ alter table DEVELOPER.T1
 add c1 number(20) constraint tab1_c1_fk references DEVELOPER.T3(id);
 alter table DEVELOPER.T3
 add c1 number(20) constraint tab3_c1_fk references DEVELOPER.T2(id);
+
