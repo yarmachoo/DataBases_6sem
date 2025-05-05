@@ -1,23 +1,52 @@
---INSERT INTO customers (customer_id, customer_name) VALUES (1, 'Иван Иванов');
---INSERT INTO products (product_id, product_name, price) VALUES (1, 'Книга', 500);
---INSERT INTO orders (order_id, customer_id, product_id, quantity) VALUES (1, 1, 1, 2);
---COMMIT;
---EXEC generate_changes_report(p_file_path => 'report_1.html', p_include_details => TRUE);
+INSERT INTO customers (customer_id, customer_name) VALUES (1, 'Veroni4ka');
+INSERT INTO products (product_id, product_name, price) VALUES (2, 'Carcade Tea', 2.00);
+INSERT INTO orders (order_id, customer_id, product_id, quantity) VALUES (2, 1, 1, 2);
 
---UPDATE customers SET customer_name = 'Петр Петров' WHERE customer_id = 1;
---UPDATE products SET price = 600 WHERE product_id = 1;
---UPDATE orders SET quantity = 3 WHERE order_id = 1;
---COMMIT;
---EXEC generate_changes_report(p_file_path => 'report_2.html', p_include_details => TRUE);
+EXEC generate_changes_report(p_file_path => 'test_3.html', p_include_details => TRUE);
 
---DELETE FROM orders WHERE order_id = 1;
---DELETE FROM products WHERE product_id = 1;
---DELETE FROM customers WHERE customer_id = 1;
---COMMIT;
---EXEC generate_changes_report(p_file_path => 'report_3.html', p_include_details => TRUE);
+BEGIN
+  history_mgmt.rollback_to(TO_TIMESTAMP('2025-05-05 17:49:18.291', 'YYYY-MM-DD HH24:MI:SS.FF3'));
+END;
 
---SELECT SYSTIMESTAMP FROM DUAL; --24/04/25 23:52:18.291955000 GMT
---INSERT INTO customers (customer_id, customer_name) VALUES (2, 'Анна');
+EXEC generate_changes_report(p_file_path => 'report_1.html', p_include_details => TRUE);
+
+UPDATE customers SET customer_name = 'Veronika Yarmak' WHERE customer_id = 1;
+UPDATE products SET price = 600 WHERE product_id = 1;
+UPDATE orders SET quantity = 3 WHERE order_id = 1;
+
+DELETE FROM orders WHERE order_id = 1;
+DELETE FROM products WHERE product_id = 1;
+DELETE FROM customers WHERE customer_id = 1;
+
+EXEC generate_changes_report(p_file_path => 'report_3.html', p_include_details => TRUE);
+
+INSERT INTO products (product_id, product_name, price) VALUES (1, 'Coffee', 3.00);
+
+SELECT * FROM customers_history;
+SELECT * FROM products_history;
+SELECT * FROM orders_history;
+SELECT * FROM customers;
+SELECT * FROM products;
+SELECT * FROM orders;
+
+BEGIN
+  history_mgmt.rollback_to(300000); -- 300000 мс = 5 минут
+END;
+/
+EXEC generate_changes_report(p_since_timestamp => TO_TIMESTAMP('2025-05-04 00:12:00.450', 'YYYY-MM-DD HH24:MI:SS.FF3'), p_file_path => 'fulltest.html', p_include_details => TRUE);
+
+DECLARE
+  v_start_time TIMESTAMP;
+BEGIN
+  SELECT SYSTIMESTAMP INTO v_start_time FROM DUAL;
+  DBMS_OUTPUT.PUT_LINE('Тест 1: ' || TO_CHAR(v_start_time, 'YYYY-MM-DD HH24:MI:SS.FF3')); --Тест 1: 2025-04-25 00:36:31.962
+END;
+/
+
+--SELECT SYSTIMESTAMP FROM DUAL; --2025-05-05T15:11:54.495733Z GMT
+
+
+--INSERT INTO customers (customer_id, customer_name) VALUES (2, 'Hanna');
 --UPDATE products SET price = 700 WHERE product_id = 1;
 --COMMIT;
 --EXEC generate_changes_report(p_file_path => 'report_4.html', p_include_details => TRUE);
@@ -25,6 +54,7 @@
 --  history_mgmt.rollback_to(TO_TIMESTAMP('2025-04-25 23:52:18.291', 'YYYY-MM-DD HH24:MI:SS.FF3'));
 --END;
 --/
+
 --EXEC generate_changes_report(p_file_path => 'report_5.html', p_include_details => TRUE);
 
 --INSERT INTO products (product_id, product_name, price) VALUES (2, 'Ручка', 50);
@@ -87,7 +117,7 @@ BEGIN
 END;
 /
 
-INSERT INTO customers (customer_id, customer_name) VALUES (1, 'Анна');
+INSERT INTO customers (customer_id, customer_name) VALUES (2, 'Анна');
 INSERT INTO customers (customer_id, customer_name) VALUES (2, 'Иван');
 INSERT INTO products (product_id, product_name, price) VALUES (1, 'Ноутбук', 100000);
 INSERT INTO products (product_id, product_name, price) VALUES (2, 'Телефон', 50000);
@@ -103,8 +133,13 @@ DELETE FROM products WHERE product_id = 2;
 DELETE FROM customers WHERE customer_id = 2;
 COMMIT;
 
+
 EXEC generate_changes_report(p_file_path => 'test_report.html', p_include_details => TRUE);
  */
+
+DELETE FROM customers WHERE customer_id = 2;
+INSERT INTO customers (customer_id, customer_name) VALUES (2, 'Kate');
+ SELECT * FROM customers;
 /* 
 DECLARE
   v_start_time TIMESTAMP;
@@ -121,7 +156,7 @@ COMMIT;
 
 EXEC generate_changes_report(p_file_path => 'test2_updates.html', p_include_details => TRUE); */
 
---EXEC generate_changes_report(p_since_timestamp => TO_TIMESTAMP('2025-04-25 00:13:05.450', 'YYYY-MM-DD HH24:MI:SS.FF3'), p_file_path => 'testtesttest.html', p_include_details => TRUE);
+--EXEC generate_changes_report(p_since_timestamp => TO_TIMESTAMP('2025-04-25 00:13:05.450', 'YYYY-MM-DD HH24:MI:SS.FF3'), p_file_path => 'test2.html', p_include_details => TRUE);
 
 /* INSERT INTO customers (customer_id, customer_name) VALUES (103, 'Test Customer');
 INSERT INTO products (product_id, product_name, price) VALUES (102, 'Test Product', 99.99);
@@ -153,7 +188,17 @@ EXEC generate_changes_report(p_file_path => 'design2.html', p_include_details =>
 END;
 / */
 
--- INSERT INTO products (product_id, product_name, price) VALUES (98, 'Test Product', 99.99);
+INSERT INTO products (product_id, product_name, price) VALUES (1, 'Coffee', 3.00);
 
+SELECT * FROM customers_history;
+SELECT * FROM products_history;
+SELECT * FROM orders_history;
+SELECT * FROM customers;
+SELECT * FROM products;
+SELECT * FROM orders;
 
-EXEC generate_changes_report(p_since_timestamp => TO_TIMESTAMP('2025-04-25 00:12:00.450', 'YYYY-MM-DD HH24:MI:SS.FF3'), p_file_path => 'testt.html', p_include_details => TRUE);
+BEGIN
+  history_mgmt.rollback_to(300000);
+END;
+/
+EXEC generate_changes_report(p_since_timestamp => TO_TIMESTAMP('2025-05-04 00:12:00.450', 'YYYY-MM-DD HH24:MI:SS.FF3'), p_file_path => 'fulltest.html', p_include_details => TRUE);
