@@ -612,204 +612,204 @@ BEGIN
     END;
     
     write_html('<!DOCTYPE html>');
-    write_html('<html lang="ru">');
-    write_html('<head>');
-    write_html('</head>');
-    write_html('<body>');
-    
-    write_html('  <div class="header">');
-    write_html('    <div class="container">');
-    write_html('      <h1 class="report-title">Отчет об изменениях базы данных</h1>');
-    write_html('      <div class="report-info">');
-    write_html('        <div>');
-    write_html('          <div class="timestamp">Отчёт сгенерирован: ' || TO_CHAR(v_end_time, 'YYYY-MM-DD HH24:MI:SS') || '</div>');
-    write_html('          <div class="timestamp">Период: ' || TO_CHAR(v_start_time, 'YYYY-MM-DD HH24:MI:SS') || ' — ' || TO_CHAR(v_end_time, 'YYYY-MM-DD HH24:MI:SS') || '</div>');
-    write_html('        </div>');
-    write_html('      </div>');
-    write_html('    </div>');
-    write_html('  </div>');
-    
-    write_html('  <div class="container">');
-    write_html('    <div class="card">');
-    write_html('      <h2 class="section-title">Сводка изменений</h2>');
+write_html('<html lang="en">');
+write_html('<head>');
+write_html('</head>');
+write_html('<body>');
+
+write_html('  <div class="header">');
+write_html('    <div class="container">');
+write_html('      <h1 class="report-title">Database Changes Report</h1>');
+write_html('      <div class="report-info">');
+write_html('        <div>');
+write_html('          <div class="timestamp">Report generated: ' || TO_CHAR(v_end_time, 'YYYY-MM-DD HH24:MI:SS') || '</div>');
+write_html('          <div class="timestamp">Period: ' || TO_CHAR(v_start_time, 'YYYY-MM-DD HH24:MI:SS') || ' — ' || TO_CHAR(v_end_time, 'YYYY-MM-DD HH24:MI:SS') || '</div>');
+write_html('        </div>');
+write_html('      </div>');
+write_html('    </div>');
+write_html('  </div>');
+
+write_html('  <div class="container">');
+write_html('    <div class="card">');
+write_html('      <h2 class="section-title">Changes Summary</h2>');
+write_html('      <table>');
+write_html('        <thead>');
+write_html('          <tr>');
+write_html('            <th>Table</th>');
+write_html('            <th>Added</th>');
+write_html('            <th>Modified</th>');
+write_html('            <th>Deleted</th>');
+write_html('            <th>Total</th>');
+write_html('          </tr>');
+write_html('        </thead>');
+write_html('        <tbody>');
+
+write_html('          <tr>');
+write_html('            <td>Customers</td>');
+write_html('            <td><span class="badge insert-badge">+' || v_cust_inserts || '</span></td>');
+write_html('            <td><span class="badge update-badge">' || v_cust_updates || '</span></td>');
+write_html('            <td><span class="badge delete-badge">-' || v_cust_deletes || '</span></td>');
+write_html('            <td>' || (v_cust_inserts + v_cust_updates + v_cust_deletes) || '</td>');
+write_html('          </tr>');
+
+write_html('          <tr>');
+write_html('            <td>Products</td>');
+write_html('            <td><span class="badge insert-badge">+' || v_prod_inserts || '</span></td>');
+write_html('            <td><span class="badge update-badge">' || v_prod_updates || '</span></td>');
+write_html('            <td><span class="badge delete-badge">-' || v_prod_deletes || '</span></td>');
+write_html('            <td>' || (v_prod_inserts + v_prod_updates + v_prod_deletes) || '</td>');
+write_html('          </tr>');
+
+write_html('          <tr>');
+write_html('            <td>Orders</td>');
+write_html('            <td><span class="badge insert-badge">+' || v_order_inserts || '</span></td>');
+write_html('            <td><span class="badge update-badge">' || v_order_updates || '</span></td>');
+write_html('            <td><span class="badge delete-badge">-' || v_order_deletes || '</span></td>');
+write_html('            <td>' || (v_order_inserts + v_order_updates + v_order_deletes) || '</td>');
+write_html('          </tr>');
+
+write_html('          <tr class="total-row">');
+write_html('            <td>Total</td>');
+write_html('            <td><span class="badge insert-badge">+' || (v_cust_inserts + v_prod_inserts + v_order_inserts) || '</span></td>');
+write_html('            <td><span class="badge update-badge">' || (v_cust_updates + v_prod_updates + v_order_updates) || '</span></td>');
+write_html('            <td><span class="badge delete-badge">-' || (v_cust_deletes + v_prod_deletes + v_order_deletes) || '</span></td>');
+write_html('            <td>' || (v_cust_inserts + v_cust_updates + v_cust_deletes + v_prod_inserts + v_prod_updates + v_prod_deletes + v_order_inserts + v_order_updates + v_order_deletes) || '</td>');
+write_html('          </tr>');
+
+write_html('        </tbody>');
+write_html('      </table>');
+write_html('    </div>');
+
+IF p_include_details THEN
+  IF (v_cust_inserts + v_cust_updates + v_cust_deletes) > 0 THEN
+     write_html('    <div class="card">');
+    write_html('      <h2 class="section-title">Customer Changes</h2>');
     write_html('      <table>');
     write_html('        <thead>');
     write_html('          <tr>');
-    write_html('            <th>Таблица</th>');
-    write_html('            <th>Добавлено</th>');
-    write_html('            <th>Изменено</th>');
-    write_html('            <th>Удалено</th>');
-    write_html('            <th>Всего</th>');
+    write_html('            <th>Time</th>');
+    write_html('            <th>Operation</th>');
+    write_html('            <th>ID</th>');
+    write_html('            <th>Name</th>');
+    write_html('            <th>Previous Name</th>');
+    write_html('          </tr>');
+    write_html('        </thead>');
+    write_html('        <tbody>');
+    
+    FOR c IN (
+      SELECT operation_type, change_time, customer_id, customer_name, old_name
+      FROM customers_history
+      WHERE change_time BETWEEN v_start_time AND v_end_time AND rolled_back = 0
+      ORDER BY change_time
+    ) LOOP
+       write_html('          <tr>');
+      write_html('            <td class="timestamp">' || TO_CHAR(c.change_time, 'YYYY-MM-DD HH24:MI:SS') || '</td>');
+      write_html('            <td><span class="badge ' || LOWER(c.operation_type) || '-badge">' || c.operation_type || '</span></td>');
+      write_html('            <td>' || c.customer_id || '</td>');
+      write_html('            <td>' || COALESCE(c.customer_name, '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(c.old_name, '<span class="null-value">N/A</span>') || '</td>');
+      write_html('          </tr>');
+    END LOOP;
+     write_html('        </tbody>');
+    write_html('      </table>');
+    write_html('    </div>');
+  END IF;
+  
+  IF (v_prod_inserts + v_prod_updates + v_prod_deletes) > 0 THEN
+      write_html('    <div class="card">');
+    write_html('      <h2 class="section-title">Product Changes</h2>');
+    write_html('      <table>');
+    write_html('        <thead>');
+    write_html('          <tr>');
+    write_html('            <th>Time</th>');
+    write_html('            <th>Operation</th>');
+    write_html('            <th>ID</th>');
+    write_html('            <th>Name</th>');
+    write_html('            <th>Previous Name</th>');
+    write_html('            <th>Price</th>');
+    write_html('            <th>Previous Price</th>');
     write_html('          </tr>');
     write_html('        </thead>');
     write_html('        <tbody>');
 
-    write_html('          <tr>');
-    write_html('            <td>Клиенты</td>');
-    write_html('            <td><span class="badge insert-badge">+' || v_cust_inserts || '</span></td>');
-    write_html('            <td><span class="badge update-badge">~' || v_cust_updates || '</span></td>');
-    write_html('            <td><span class="badge delete-badge">-' || v_cust_deletes || '</span></td>');
-    write_html('            <td>' || (v_cust_inserts + v_cust_updates + v_cust_deletes) || '</td>');
-    write_html('          </tr>');
-
-    write_html('          <tr>');
-    write_html('            <td>Товары</td>');
-    write_html('            <td><span class="badge insert-badge">+' || v_prod_inserts || '</span></td>');
-    write_html('            <td><span class="badge update-badge">~' || v_prod_updates || '</span></td>');
-    write_html('            <td><span class="badge delete-badge">-' || v_prod_deletes || '</span></td>');
-    write_html('            <td>' || (v_prod_inserts + v_prod_updates + v_prod_deletes) || '</td>');
-    write_html('          </tr>');
-    
-    write_html('          <tr>');
-    write_html('            <td>Заказы</td>');
-    write_html('            <td><span class="badge insert-badge">+' || v_order_inserts || '</span></td>');
-    write_html('            <td><span class="badge update-badge">~' || v_order_updates || '</span></td>');
-    write_html('            <td><span class="badge delete-badge">-' || v_order_deletes || '</span></td>');
-    write_html('            <td>' || (v_order_inserts + v_order_updates + v_order_deletes) || '</td>');
-    write_html('          </tr>');
-
-    write_html('          <tr class="total-row">');
-    write_html('            <td>Итого</td>');
-    write_html('            <td><span class="badge insert-badge">+' || (v_cust_inserts + v_prod_inserts + v_order_inserts) || '</span></td>');
-    write_html('            <td><span class="badge update-badge">~' || (v_cust_updates + v_prod_updates + v_order_updates) || '</span></td>');
-    write_html('            <td><span class="badge delete-badge">-' || (v_cust_deletes + v_prod_deletes + v_order_deletes) || '</span></td>');
-    write_html('            <td>' || (v_cust_inserts + v_cust_updates + v_cust_deletes + v_prod_inserts + v_prod_updates + v_prod_deletes + v_order_inserts + v_order_updates + v_order_deletes) || '</td>');
-    write_html('          </tr>');
+    FOR p IN (
+      SELECT operation_type, change_time, product_id, product_name, old_name, price, old_price
+      FROM products_history
+      WHERE change_time BETWEEN v_start_time AND v_end_time AND rolled_back = 0
+      ORDER BY change_time
+    ) LOOP
+      write_html('          <tr>');
+      write_html('            <td class="timestamp">' || TO_CHAR(p.change_time, 'YYYY-MM-DD HH24:MI:SS') || '</td>');
+      write_html('            <td><span class="badge ' || LOWER(p.operation_type) || '-badge">' || p.operation_type || '</span></td>');
+      write_html('            <td>' || p.product_id || '</td>');
+      write_html('            <td>' || COALESCE(p.product_name, '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(p.old_name, '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(TO_CHAR(p.price, 'FM999G999G990D00'), '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(TO_CHAR(p.old_price, 'FM999G999G990D00'), '<span class="null-value">N/A</span>') || '</td>');
+      write_html('          </tr>');
+    END LOOP;
     
     write_html('        </tbody>');
     write_html('      </table>');
     write_html('    </div>');
+  END IF;
+  
+  IF (v_order_inserts + v_order_updates + v_order_deletes) > 0 THEN
+     write_html('    <div class="card">');
+    write_html('      <h2 class="section-title">Order Changes</h2>');
+    write_html('      <table>');
+    write_html('        <thead>');
+    write_html('          <tr>');
+    write_html('            <th>Time</th>');
+    write_html('            <th>Operation</th>');
+    write_html('            <th>Order ID</th>');
+    write_html('            <th>Customer</th>');
+    write_html('            <th>Previous Customer</th>');
+    write_html('            <th>Product</th>');
+    write_html('            <th>Previous Product</th>');
+    write_html('            <th>Quantity</th>');
+    write_html('            <th>Previous Quantity</th>');
+    write_html('          </tr>');
+    write_html('        </thead>');
+    write_html('        <tbody>');
+    FOR o IN (
+      SELECT operation_type, change_time, order_id, 
+             customer_id, old_customer_id, 
+             product_id, old_product_id,
+             quantity, old_quantity
+      FROM orders_history
+      WHERE change_time BETWEEN v_start_time AND v_end_time AND rolled_back = 0
+      ORDER BY change_time
+    ) LOOP
+       write_html('          <tr>');
+      write_html('            <td class="timestamp">' || TO_CHAR(o.change_time, 'YYYY-MM-DD HH24:MI:SS') || '</td>');
+      write_html('            <td><span class="badge ' || LOWER(o.operation_type) || '-badge">' || o.operation_type || '</span></td>');
+      write_html('            <td>' || o.order_id || '</td>');
+      write_html('            <td>' || COALESCE(TO_CHAR(o.customer_id), '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(TO_CHAR(o.old_customer_id), '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(TO_CHAR(o.product_id), '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(TO_CHAR(o.old_product_id), '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(TO_CHAR(o.quantity), '<span class="null-value">N/A</span>') || '</td>');
+      write_html('            <td>' || COALESCE(TO_CHAR(o.old_quantity), '<span class="null-value">N/A</span>') || '</td>');
+      write_html('          </tr>');
+    END LOOP;
     
-    IF p_include_details THEN
-      IF (v_cust_inserts + v_cust_updates + v_cust_deletes) > 0 THEN
-         write_html('    <div class="card">');
-        write_html('      <h2 class="section-title">Изменения клиентов</h2>');
-        write_html('      <table>');
-        write_html('        <thead>');
-        write_html('          <tr>');
-        write_html('            <th>Время</th>');
-        write_html('            <th>Операция</th>');
-        write_html('            <th>ID</th>');
-        write_html('            <th>Имя</th>');
-        write_html('            <th>Предыдущее имя</th>');
-        write_html('          </tr>');
-        write_html('        </thead>');
-        write_html('        <tbody>');
-        
-        FOR c IN (
-          SELECT operation_type, change_time, customer_id, customer_name, old_name
-          FROM customers_history
-          WHERE change_time BETWEEN v_start_time AND v_end_time AND rolled_back = 0
-          ORDER BY change_time
-        ) LOOP
-           write_html('          <tr>');
-          write_html('            <td class="timestamp">' || TO_CHAR(c.change_time, 'YYYY-MM-DD HH24:MI:SS') || '</td>');
-          write_html('            <td><span class="badge ' || LOWER(c.operation_type) || '-badge">' || c.operation_type || '</span></td>');
-          write_html('            <td>' || c.customer_id || '</td>');
-          write_html('            <td>' || COALESCE(c.customer_name, '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(c.old_name, '<span class="null-value">N/A</span>') || '</td>');
-          write_html('          </tr>');
-        END LOOP;
-         write_html('        </tbody>');
-        write_html('      </table>');
-        write_html('    </div>');
-      END IF;
-      
-      IF (v_prod_inserts + v_prod_updates + v_prod_deletes) > 0 THEN
-          write_html('    <div class="card">');
-        write_html('      <h2 class="section-title">Изменения товаров</h2>');
-        write_html('      <table>');
-        write_html('        <thead>');
-        write_html('          <tr>');
-        write_html('            <th>Время</th>');
-        write_html('            <th>Операция</th>');
-        write_html('            <th>ID</th>');
-        write_html('            <th>Наименование</th>');
-        write_html('            <th>Пред. наименование</th>');
-        write_html('            <th>Цена</th>');
-        write_html('            <th>Пред. цена</th>');
-        write_html('          </tr>');
-        write_html('        </thead>');
-        write_html('        <tbody>');
+    write_html('        </tbody>');
+    write_html('      </table>');
+    write_html('    </div>');
+  END IF;
+END IF;
 
-        FOR p IN (
-          SELECT operation_type, change_time, product_id, product_name, old_name, price, old_price
-          FROM products_history
-          WHERE change_time BETWEEN v_start_time AND v_end_time AND rolled_back = 0
-          ORDER BY change_time
-        ) LOOP
-          write_html('          <tr>');
-          write_html('            <td class="timestamp">' || TO_CHAR(p.change_time, 'YYYY-MM-DD HH24:MI:SS') || '</td>');
-          write_html('            <td><span class="badge ' || LOWER(p.operation_type) || '-badge">' || p.operation_type || '</span></td>');
-          write_html('            <td>' || p.product_id || '</td>');
-          write_html('            <td>' || COALESCE(p.product_name, '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(p.old_name, '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(TO_CHAR(p.price, 'FM999G999G990D00'), '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(TO_CHAR(p.old_price, 'FM999G999G990D00'), '<span class="null-value">N/A</span>') || '</td>');
-          write_html('          </tr>');
-        END LOOP;
-        
-        write_html('        </tbody>');
-        write_html('      </table>');
-        write_html('    </div>');
-      END IF;
-      
-      IF (v_order_inserts + v_order_updates + v_order_deletes) > 0 THEN
-         write_html('    <div class="card">');
-        write_html('      <h2 class="section-title">Изменения заказов</h2>');
-        write_html('      <table>');
-        write_html('        <thead>');
-        write_html('          <tr>');
-        write_html('            <th>Время</th>');
-        write_html('            <th>Операция</th>');
-        write_html('            <th>ID заказа</th>');
-        write_html('            <th>Клиент</th>');
-        write_html('            <th>Пред. клиент</th>');
-        write_html('            <th>Товар</th>');
-        write_html('            <th>Пред. товар</th>');
-        write_html('            <th>Кол-во</th>');
-        write_html('            <th>Пред. кол-во</th>');
-        write_html('          </tr>');
-        write_html('        </thead>');
-        write_html('        <tbody>');
-        FOR o IN (
-          SELECT operation_type, change_time, order_id, 
-                 customer_id, old_customer_id, 
-                 product_id, old_product_id,
-                 quantity, old_quantity
-          FROM orders_history
-          WHERE change_time BETWEEN v_start_time AND v_end_time AND rolled_back = 0
-          ORDER BY change_time
-        ) LOOP
-           write_html('          <tr>');
-          write_html('            <td class="timestamp">' || TO_CHAR(o.change_time, 'YYYY-MM-DD HH24:MI:SS') || '</td>');
-          write_html('            <td><span class="badge ' || LOWER(o.operation_type) || '-badge">' || o.operation_type || '</span></td>');
-          write_html('            <td>' || o.order_id || '</td>');
-          write_html('            <td>' || COALESCE(TO_CHAR(o.customer_id), '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(TO_CHAR(o.old_customer_id), '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(TO_CHAR(o.product_id), '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(TO_CHAR(o.old_product_id), '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(TO_CHAR(o.quantity), '<span class="null-value">N/A</span>') || '</td>');
-          write_html('            <td>' || COALESCE(TO_CHAR(o.old_quantity), '<span class="null-value">N/A</span>') || '</td>');
-          write_html('          </tr>');
-        END LOOP;
-        
-        write_html('        </tbody>');
-        write_html('      </table>');
-        write_html('    </div>');
-      END IF;
-    END IF;
-   write_html('  </div>');
-    write_html('</body>');
-    write_html('</html>');
-    UTL_FILE.FCLOSE(v_file);
-    
-    UPDATE report_tracking
-    SET last_report_time = v_end_time,
-        report_count = v_report_num;
-    COMMIT;  
-    DBMS_OUTPUT.PUT_LINE('Report #' || v_report_num || ' generated successfully at: ' || p_file_path);
-    
+write_html('  </div>');
+write_html('</body>');
+write_html('</html>');
+UTL_FILE.FCLOSE(v_file);
+
+UPDATE report_tracking
+SET last_report_time = v_end_time,
+    report_count = v_report_num;
+COMMIT;  
+DBMS_OUTPUT.PUT_LINE('Report #' || v_report_num || ' generated successfully at: ' || p_file_path);
   EXCEPTION
     WHEN OTHERS THEN
       IF UTL_FILE.IS_OPEN(v_file) THEN
