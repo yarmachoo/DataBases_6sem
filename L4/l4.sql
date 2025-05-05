@@ -94,7 +94,7 @@ BEGIN
   RETURN v_cur;
 EXCEPTION
   WHEN OTHERS THEN
-    RAISE_APPLICATION_ERROR(-20001, 'Ошибка формирования запроса: ' || SQLERRM || '. SQL: ' || v_sql);
+    RAISE_APPLICATION_ERROR(-20001, 'Error with your query: ' || SQLERRM || '. SQL: ' || v_sql);
 END;
 /
 
@@ -284,7 +284,7 @@ BEGIN
 
 EXCEPTION
   WHEN OTHERS THEN
-    RAISE_APPLICATION_ERROR(-20002, 'Ошибка формирования/выполнения запроса: ' || SQLERRM || '. SQL: ' || v_sql);
+    RAISE_APPLICATION_ERROR(-20002, 'Error with format or executing of your query' || SQLERRM || '. SQL: ' || v_sql);
 END;
 /
 CREATE OR REPLACE FUNCTION json_ddl_handler(p_json CLOB) RETURN VARCHAR2 IS

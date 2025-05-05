@@ -138,7 +138,7 @@ BEGIN
   RETURN v_cur;
 EXCEPTION
   WHEN OTHERS THEN
-    RAISE_APPLICATION_ERROR(-20001, 'Ошибка формирования запроса: ' || SQLERRM || '. SQL: ' || v_sql);
+    RAISE_APPLICATION_ERROR(-20001, 'Error with your query: ' || SQLERRM || '. SQL: ' || v_sql);
 END;
 /
 
@@ -161,7 +161,7 @@ DECLARE
   v_name VARCHAR2(50);
 BEGIN
   v_cur := json_select_handler_union(v_json);
-  DBMS_OUTPUT.PUT_LINE('Результат UNION:');
+  DBMS_OUTPUT.PUT_LINE('Result of UNION:');
   LOOP
     FETCH v_cur INTO v_name;
     EXIT WHEN v_cur%NOTFOUND;
@@ -198,7 +198,7 @@ DECLARE
   v_name VARCHAR2(50);
 BEGIN
   v_cur := json_select_handler_union(v_json);
-  DBMS_OUTPUT.PUT_LINE('UNION ALL с дубликатами:');
+  DBMS_OUTPUT.PUT_LINE('UNION ALL with duplicates:');
   LOOP
     FETCH v_cur INTO v_name;
     EXIT WHEN v_cur%NOTFOUND;
@@ -228,7 +228,7 @@ DECLARE
   v_col2 VARCHAR2(100);
 BEGIN
   v_cur := json_select_handler_union(v_json);
-  DBMS_OUTPUT.PUT_LINE('UNION с разными типами данных:');
+  DBMS_OUTPUT.PUT_LINE('UNION with different types of data:');
   LOOP
     FETCH v_cur INTO v_col1, v_col2;
     EXIT WHEN v_cur%NOTFOUND;
@@ -271,7 +271,7 @@ DECLARE
   v_col2 VARCHAR2(100);
 BEGIN
   v_cur := json_select_handler_union(v_json);
-  DBMS_OUTPUT.PUT_LINE('UNION с условиями WHERE:');
+  DBMS_OUTPUT.PUT_LINE('UNION with WHERE condition:');
   LOOP
     FETCH v_cur INTO v_col1, v_col2;
     EXIT WHEN v_cur%NOTFOUND;
