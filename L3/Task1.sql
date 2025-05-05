@@ -190,15 +190,15 @@ CREATE OR REPLACE PROCEDURE compare_schemas (
 
     
 BEGIN
-    SELECT COUNT(*) INTO v_count FROM all_users WHERE username = UPPER(dev_schema_name);
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20001, 'Dev schema ' || dev_schema_name || ' not exists');
-    END IF;
+    --SELECT COUNT(*) INTO v_count FROM all_users WHERE username = UPPER(dev_schema_name);
+    --IF v_count = 0 THEN
+    --    RAISE_APPLICATION_ERROR(-20001, 'Dev schema ' || dev_schema_name || ' not exists');
+    --END IF;
     
-    SELECT COUNT(*) INTO v_count FROM all_users WHERE username = UPPER(prod_schema_name);
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Prod schema ' || prod_schema_name || ' not exists');
-    END IF;
+    --SELECT COUNT(*) INTO v_count FROM all_users WHERE username = UPPER(prod_schema_name);
+    --IF v_count = 0 THEN
+    --    RAISE_APPLICATION_ERROR(-20002, 'Prod schema ' || prod_schema_name || ' not exists');
+    --END IF;
     
     -- сбор зависимостей по внеш ключам
     SELECT dep_rec(table_name, referenced_table_name)
@@ -329,3 +329,4 @@ EXCEPTION
         RAISE;
 END compare_schemas;
 /
+

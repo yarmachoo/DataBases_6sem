@@ -1,14 +1,15 @@
 create table DEVELOPER.my_table(
-    id number PRIMARY KEY,
+    id VARCHAR2(100) PRIMARY KEY,
     name VARCHAR2(100)
 );
 
 CREATE TABLE PRODUCTION.my_table (
     id NUMBER PRIMARY KEY,
-    name VARCHAR2(100),
-    description VARCHAR2(255)
+    name VARCHAR2(100)
 );
 
+drop table DEVELOPER.my_table;
+drop table PRODUCTION.my_table;
 
 EXECUTE GENERATE_SYNC_SCRIPT('DEVELOPER', 'PRODUCTION');
 
@@ -19,38 +20,42 @@ END;
 
 
 
+
 CREATE TABLE DEVELOPER.t2 (
     id NUMBER PRIMARY KEY,
-    name VARCHAR2(100)
+    val VARCHAR2(100)
 );
 
 
 CREATE TABLE DEVELOPER.t3 (
     id NUMBER PRIMARY KEY,
-    name VARCHAR2(100),
-    t2_id NUMBER,
-    CONSTRAINT fk_t2 FOREIGN KEY (t2_id) REFERENCES DEVELOPER.t2(id)
+    val VARCHAR2(100)
 );
 
 
 CREATE TABLE DEVELOPER.t1 (
     id NUMBER PRIMARY KEY,
-    name VARCHAR2(100),
-    t3_id NUMBER,
-    CONSTRAINT fk_t3 FOREIGN KEY (t3_id) REFERENCES DEVELOPER.t3(id)
+    val VARCHAR2(100)
 );
+
+
+alter table DEVELOPER.T1
+add constr1 number(20) constraint tab1 references DEVELOPER.T3(id);
+
+alter table DEVELOPER.T3
+add constr2 number(20) constraint tab2 references DEVELOPER.T2(id);
 
 EXECUTE GENERATE_SYNC_SCRIPT('DEVELOPER', 'PRODUCTION');
 
 
 CREATE TABLE DEVELOPER.table1 (
     id NUMBER PRIMARY KEY,
-    name VARCHAR2(100)
+    val VARCHAR2(100)
 );
 
 CREATE TABLE PRODUCTION.table1 (
     id VARCHAR2(100) PRIMARY KEY, 
-    name VARCHAR2(100)
+    val VARCHAR2(100)
 );
 
 EXECUTE GENERATE_SYNC_SCRIPT('DEVELOPER', 'PRODUCTION');

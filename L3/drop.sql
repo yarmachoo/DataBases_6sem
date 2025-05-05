@@ -42,3 +42,79 @@ BEGIN
     EXECUTE IMMEDIATE 'DROP PROCEDURE PRODUCTION.specialOperation';
 END;
 /
+
+
+-- Удаление таблиц с внешними ключами в правильном порядке
+DROP TABLE DEVELOPER.t1 CASCADE CONSTRAINTS; -- Удаляем t1, которая ссылается на t3
+DROP TABLE DEVELOPER.t3 CASCADE CONSTRAINTS; -- Удаляем t3, которая ссылается на t2
+DROP TABLE DEVELOPER.t2 CASCADE CONSTRAINTS; -- Удаляем t2
+
+-- Удаление таблицы table1, которая существует в обеих схемах
+DROP TABLE DEVELOPER.table1 CASCADE CONSTRAINTS;
+DROP TABLE PRODUCTION.table1 CASCADE CONSTRAINTS;
+
+-- Удаление таблицы my_table, которая существует в обеих схемах
+DROP TABLE DEVELOPER.my_table CASCADE CONSTRAINTS;
+DROP TABLE PRODUCTION.my_table CASCADE CONSTRAINTS;
+
+-- Удаление процедур
+DROP PROCEDURE DEVELOPER.my_procedure;
+DROP PROCEDURE PRODUCTION.my_procedure;
+
+
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TYPE dep_rec';
+    EXECUTE IMMEDIATE 'DROP TYPE dep_tab';
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;  -- Игнорировать ошибку, если типы не существуют
+END;
+
+SELECT * FROM all_tab_privs WHERE grantee = USER;
+
+SELECT * FROM session_privs;
+
+SELECT COUNT(*) INTO v_count FROM all_users WHERE username = UPPER('DEVELOPER');
+
+
+SELECT * FROM user_role_privs;
+
+SELECT * 
+FROM all_dependencies 
+WHERE referenced_type = 'TYPE' 
+  AND referenced_name = 'DEP_REC';
+
+  DROP TYPE dep_rec CASCADE;
+
+
+DROP TYPE dep_rec FORCE;
+DROP TYPE dep_tab FORCE;
+
+GRANT SELECT ANY TABLE TO SYSTEM;
+GRANT SELECT_CATALOG_ROLE TO SYSTEM;
+
+
+SELECT owner, name, type 
+FROM all_dependencies 
+WHERE referenced_name IN ('DEP_REC', 'DEP_TAB');
+
+SELECT username FROM all_users WHERE username IN ('DEVELOPER', 'PRODUCTION');
+SELECT username FROM all_users WHERE username IN ('DEVELOPER', 'PRODUCTION');
+
+CONNECT SYS AS SYSDBA;
+
+GRANT SELECT ON ALL_TAB_COLUMNS TO SYSTEM;
+GRANT SELECT ON ALL_CONSTRAINTS TO SYSTEM;
+GRANT SELECT ON ALL_CONS_COLUMNS TO SYSTEM;
+GRANT SELECT ON ALL_TABLES TO SYSTEM;
+GRANT SELECT ON ALL_USERS TO SYSTEM;
+
+
+GRANT SELECT ANY TABLE TO SYSTEM;
+
+ALTER USER DEVELOPER IDENTIFIED BY admin;
+ALTER USER PRODUCTION IDENTIFIED BY admin;
+
+
+SELECT username FROM all_users WHERE username IN ('DEVELOPER', 'PRODUCTION');
+
